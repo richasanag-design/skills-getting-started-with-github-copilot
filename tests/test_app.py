@@ -38,7 +38,17 @@ def test_static_index_is_served(client: TestClient) -> None:
 
 def test_get_activities_returns_available_activities(client: TestClient) -> None:
     # Arrange
-    expected_activity_names = {"Chess Club", "Programming Class", "Gym Class"}
+    expected_activity_names = {
+        "Chess Club",
+        "Programming Class",
+        "Gym Class",
+        "Basketball Club",
+        "Soccer Club",
+        "Art Club",
+        "Drama Club",
+        "Science Club",
+        "Debate Club",
+    }
     expected_chess_participants = [
         "michael@mergington.edu",
         "daniel@mergington.edu",
