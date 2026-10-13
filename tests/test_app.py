@@ -24,6 +24,18 @@ def test_root_redirects_to_index(client: TestClient) -> None:
     assert response.headers["location"] == expected_location
 
 
+def test_static_index_is_served(client: TestClient) -> None:
+    # Arrange
+    expected_heading = "<h1>Mergington High School</h1>"
+
+    # Act
+    response = client.get("/static/index.html")
+
+    # Assert
+    assert response.status_code == 200
+    assert expected_heading in response.text
+
+
 def test_get_activities_returns_available_activities(client: TestClient) -> None:
     # Arrange
     expected_activity_names = {"Chess Club", "Programming Class", "Gym Class"}
@@ -76,3 +88,16 @@ def test_signup_for_unknown_activity_returns_not_found(client: TestClient) -> No
     # Assert
     assert response.status_code == 404
     assert response.json() == {"detail": "Activity not found"}
+
+
+def test_signup_without_email_returns_validation_error(client: TestClient) -> None:
+    # Arrange
+    activity_name = "Chess Club"
+
+    # Act
+    response = client.post(f"/activities/{activity_name}/signup")
+
+    # Assert
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["query", "email"]
+    assert response.json()["detail"][0]["type"] == "missing"
