@@ -74,6 +74,25 @@ def test_signup_adds_participant(client: TestClient) -> None:
     assert email in activities[activity_name]["participants"]
 
 
+def test_signup_rejects_duplicate_participant(client: TestClient) -> None:
+    # Arrange
+    activity_name = "Chess Club"
+    email = "student@mergington.edu"
+    signup_url = f"/activities/{activity_name}/signup"
+    client.post(signup_url, params={"email": email})
+
+    # Act
+    response = client.post(signup_url, params={"email": email})
+    participants = client.get("/activities").json()[activity_name]["participants"]
+
+    # Assert
+    assert response.status_code == 409
+    assert response.json() == {
+        "detail": "Student is already signed up for this activity"
+    }
+    assert participants.count(email) == 1
+
+
 def test_signup_for_unknown_activity_returns_not_found(client: TestClient) -> None:
     # Arrange
     activity_name = "Unknown Club"
